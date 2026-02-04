@@ -1,16 +1,20 @@
-CREATE TABLE IF NOT EXISTS projects (
+CREATE TABLE IF NOT EXISTS work_orders (
   id VARCHAR(255) PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
+  title VARCHAR(255) NOT NULL,
+  subtitle VARCHAR(255),
+  status VARCHAR(50) NOT NULL,
+  priority VARCHAR(50),
+  asset_id VARCHAR(255),
   created_at BIGINT NOT NULL,
   updated_at BIGINT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS tasks (
+CREATE TABLE IF NOT EXISTS checklist_items (
   id VARCHAR(255) PRIMARY KEY,
-  project_id VARCHAR(255) REFERENCES projects(id),
+  work_order_id VARCHAR(255) REFERENCES work_orders(id),
   title VARCHAR(255) NOT NULL,
-  status VARCHAR(50) NOT NULL,
+  is_completed BOOLEAN NOT NULL DEFAULT FALSE,
+  requirements TEXT,
   created_at BIGINT NOT NULL,
   updated_at BIGINT NOT NULL
 );

@@ -1,23 +1,27 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb'
 
 export default appSchema({
-  version: 1,
+  version: 2,
   tables: [
     tableSchema({
-      name: 'projects',
+      name: 'work_orders',
       columns: [
-        { name: 'name', type: 'string' },
-        { name: 'description', type: 'string', isOptional: true },
+        { name: 'title', type: 'string' },
+        { name: 'subtitle', type: 'string' },
+        { name: 'status', type: 'string' },
+        { name: 'priority', type: 'string' },
+        { name: 'asset_id', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
       ]
     }),
     tableSchema({
-      name: 'tasks',
+      name: 'checklist_items',
       columns: [
-        { name: 'project_id', type: 'string', isIndexed: true },
+        { name: 'work_order_id', type: 'string', isIndexed: true },
         { name: 'title', type: 'string' },
-        { name: 'status', type: 'string' },
+        { name: 'is_completed', type: 'boolean' },
+        { name: 'requirements', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
       ]

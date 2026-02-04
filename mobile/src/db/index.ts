@@ -2,8 +2,8 @@ import { Database } from '@nozbe/watermelondb'
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite'
 
 import schema from './schema'
-import Project from './models/Project'
-import Task from './models/Task'
+import WorkOrder from './models/WorkOrder'
+import ChecklistItem from './models/ChecklistItem'
 
 const adapter = new SQLiteAdapter({
   schema,
@@ -16,8 +16,8 @@ const adapter = new SQLiteAdapter({
 const database = new Database({
   adapter,
   modelClasses: [
-    Project,
-    Task,
+    WorkOrder,
+    ChecklistItem,
   ],
 })
 

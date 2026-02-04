@@ -20,27 +20,27 @@ app.get('/sync', async (req, res) => {
   try {
     const lastPulledAt = parseInt(req.query.last_pulled_at as string) || 0;
     
-    // Fetch changes for Projects
-    const projectsResult = await pool.query(
-      'SELECT * FROM projects WHERE updated_at > $1', 
+    // Fetch changes for WorkOrders
+    const workOrdersResult = await pool.query(
+      'SELECT * FROM work_orders WHERE updated_at > $1', 
       [lastPulledAt]
     );
 
-    // Fetch changes for Tasks
-    const tasksResult = await pool.query(
-      'SELECT * FROM tasks WHERE updated_at > $1',
+    // Fetch changes for ChecklistItems
+    const checklistItemsResult = await pool.query(
+      'SELECT * FROM checklist_items WHERE updated_at > $1',
       [lastPulledAt]
     );
 
     const changes = {
-      projects: {
-        created: projectsResult.rows.filter(r => r.created_at > lastPulledAt),
-        updated: projectsResult.rows.filter(r => r.created_at <= lastPulledAt && r.updated_at > lastPulledAt),
-        deleted: [], // TODO: Implement soft deletes to track deletions
+      work_orders: {
+        created: workOrdersResult.rows.filter(r => r.created_at > lastPulledAt),
+        updated: workOrdersResult.rows.filter(r => r.created_at <= lastPulledAt && r.updated_at > lastPulledAt),
+        deleted: [],
       },
-      tasks: {
-        created: tasksResult.rows.filter(r => r.created_at > lastPulledAt),
-        updated: tasksResult.rows.filter(r => r.created_at <= lastPulledAt && r.updated_at > lastPulledAt),
+      checklist_items: {
+        created: checklistItemsResult.rows.filter(r => r.created_at > lastPulledAt),
+        updated: checklistItemsResult.rows.filter(r => r.created_at <= lastPulledAt && r.updated_at > lastPulledAt),
         deleted: [],
       }
     };
@@ -61,46 +61,46 @@ app.post('/sync', async (req, res) => {
     const { changes } = req.body;
     await client.query('BEGIN');
 
-    // Process Projects
-    if (changes.projects) {
-      const { created, updated, deleted } = changes.projects;
+    // Process WorkOrders
+    if (changes.work_orders) {
+      const { created, updated, deleted } = changes.work_orders;
       
-      for (const p of created) {
+      for (const wo of created) {
         await client.query(
-          'INSERT INTO projects (id, name, description, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO UPDATE SET updated_at = $5',
-          [p.id, p.name, p.description, p.created_at, p.updated_at]
+          'INSERT INTO work_orders (id, title, subtitle, status, priority, asset_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (id) DO UPDATE SET updated_at = $8',
+          [wo.id, wo.title, wo.subtitle, wo.status, wo.priority, wo.asset_id, wo.created_at, wo.updated_at]
         );
       }
       
-      for (const p of updated) {
+      for (const wo of updated) {
         await client.query(
-          'UPDATE projects SET name = $1, description = $2, updated_at = $3 WHERE id = $4',
-          [p.name, p.description, p.updated_at, p.id]
+          'UPDATE work_orders SET title = $1, subtitle = $2, status = $3, priority = $4, asset_id = $5, updated_at = $6 WHERE id = $7',
+          [wo.title, wo.subtitle, wo.status, wo.priority, wo.asset_id, wo.updated_at, wo.id]
         );
       }
     }
 
-    // Process Tasks
-    if (changes.tasks) {
-      const { created, updated, deleted } = changes.tasks;
+    // Process ChecklistItems
+    if (changes.checklist_items) {
+      const { created, updated, deleted } = changes.checklist_items;
       
-      for (const t of created) {
+      for (const item of created) {
         await client.query(
-          'INSERT INTO tasks (id, project_id, title, status, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (id) DO UPDATE SET updated_at = $6',
-          [t.id, t.project_id, t.title, t.status, t.created_at, t.updated_at]
+          'INSERT INTO checklist_items (id, work_order_id, title, is_completed, requirements, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO UPDATE SET updated_at = $7',
+          [item.id, item.work_order_id, item.title, item.is_completed, item.requirements, item.created_at, item.updated_at]
         );
       }
 
-      for (const t of updated) {
+      for (const item of updated) {
         await client.query(
-          'UPDATE tasks SET title = $1, status = $2, updated_at = $3 WHERE id = $4',
-          [t.title, t.status, t.updated_at, t.id]
+          'UPDATE checklist_items SET title = $1, is_completed = $2, requirements = $3, updated_at = $4 WHERE id = $5',
+          [item.title, item.is_completed, item.requirements, item.updated_at, item.id]
         );
       }
     }
 
     await client.query('COMMIT');
-    res.status(200).send('OK');
+    res.status(200).json({ status: 'ok' });
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Sync push error:', error);
@@ -111,5 +111,5 @@ app.post('/sync', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });
