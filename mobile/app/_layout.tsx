@@ -6,7 +6,7 @@ export default function Layout() {
     <>
       <StatusBar style="auto" />
       <Stack>
-        <Stack.Screen name="index" options={{ title: 'FieldSync' }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
     </>
   );
