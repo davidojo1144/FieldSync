@@ -1,5 +1,6 @@
+import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { withObservables } from '@nozbe/watermelondb/react';
@@ -47,6 +48,7 @@ function EngineerDashboard({ workOrders }: { workOrders: WorkOrder[] }) {
 
   return (
     <SafeAreaView className="flex-1 bg-background-dark">
+      <Stack.Screen options={{ headerShown: false }} />
       {/* TopAppBar */}
       <View className="flex-row items-center justify-between p-4 pb-2 border-b border-border-rugged/30">
         <View className="flex-row items-center gap-3">

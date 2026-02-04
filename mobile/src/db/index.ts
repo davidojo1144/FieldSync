@@ -1,13 +1,15 @@
 import { Database } from '@nozbe/watermelondb'
-import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite'
+import LokiJSAdapter from '@nozbe/watermelondb/adapters/lokijs'
 
 import schema from './schema'
 import WorkOrder from './models/WorkOrder'
 import ChecklistItem from './models/ChecklistItem'
 
-const adapter = new SQLiteAdapter({
+// Use LokiJSAdapter for Expo Go compatibility (Pure JS, no native JSI required)
+const adapter = new LokiJSAdapter({
   schema,
-  jsi: true,
+  useWebWorker: false,
+  useIncrementalIndexedDB: true,
   onSetUpError: error => {
     console.error('Database failed to load', error)
   }

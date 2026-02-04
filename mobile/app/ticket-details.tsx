@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { withObservables } from '@nozbe/watermelondb/react';
 import database from '../src/db';
@@ -176,5 +176,10 @@ export default function TicketDetailsRoute() {
         );
     }
 
-    return <TicketDetailsLoader id={workOrderId} />;
+    return (
+        <>
+            <Stack.Screen options={{ headerShown: false }} />
+            <TicketDetailsLoader id={workOrderId} />
+        </>
+    );
 }
