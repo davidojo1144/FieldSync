@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useToast } from '../context/ToastContext';
-import baseUrl from '../src/config/api';
+import http from '../src/config/http';
 
 export default function AuthScreen() {
   const router = useRouter();
@@ -19,30 +19,18 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
 
   const handleAuth = async () => {
-    const endpoint = isLogin ? `${baseUrl}/auth/login` : `${baseUrl}/auth/register`;
+    const endpoint = isLogin ? '/auth/login' : '/auth/register';
     const body = isLogin 
       ? { email, password }
       : { first_name: firstName, last_name: lastName, email, password };
 
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // TODO: Store token securely
-        showToast(isLogin ? 'Logged in successfully' : 'Registered successfully', 'success');
-        router.replace('/dashboard');
-      } else {
-        showToast(data.error || 'Authentication failed', 'error');
-      }
+      const { data } = await http.post(endpoint, body);
+      showToast(isLogin ? 'Logged in successfully' : 'Registered successfully', 'success');
+      router.replace('/dashboard');
     } catch (error) {
-      console.error(error);
-      showToast('Network request failed. Ensure backend is running.', 'error');
+      const message = (error as any)?.response?.data?.error || 'Network request failed. Ensure backend is running.';
+      showToast(message, 'error');
     }
   };
 
