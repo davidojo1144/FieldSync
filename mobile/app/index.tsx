@@ -13,9 +13,9 @@ export default function Home() {
         <Text className="text-3xl font-bold text-white mb-2 font-display">FieldSync</Text>
         <Text className="text-slate-400 text-center mb-10">Offline-First Field Engineering ERP</Text>
         
-        <Link href="/dashboard" asChild>
+        <Link href="/onboarding" asChild>
           <TouchableOpacity className="bg-primary w-full py-4 px-8 rounded-xl items-center shadow-lg shadow-primary/20">
-            <Text className="text-background-dark font-bold text-lg uppercase tracking-wider">Enter Dashboard</Text>
+            <Text className="text-background-dark font-bold text-lg uppercase tracking-wider">Start App</Text>
           </TouchableOpacity>
         </Link>
       </View>
