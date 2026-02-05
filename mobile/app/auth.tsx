@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useToast } from '../context/ToastContext';
+import baseUrl from '../src/config/api';
 
 export default function AuthScreen() {
   const router = useRouter();
@@ -18,10 +19,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
 
   const handleAuth = async () => {
-    // Determine host based on environment (localhost for simulator might need IP)
-    // For Android Emulator use 10.0.2.2, for iOS Simulator localhost is fine
-    const host = 'http://localhost:3000'; 
-    const endpoint = isLogin ? `${host}/auth/login` : `${host}/auth/register`;
+    const endpoint = isLogin ? `${baseUrl}/auth/login` : `${baseUrl}/auth/register`;
     const body = isLogin 
       ? { email, password }
       : { first_name: firstName, last_name: lastName, email, password };
